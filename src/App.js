@@ -9,11 +9,11 @@ function App() {
 
 //declaramos las variables y su manejador de estado;
 
-//el primer parametro de la constante es el estado, el segundo 
+//el primer parametro de la constante es el estado
 
-//el segundo parametro "setN" es n
+//el segundo parametro "setN" es el que modificador del estado de nuestra variable
 
-//despues el parametro de use State es el estado actual de la constante en este caso esta vacio
+//despues el parametro de use State es el estado actual con el que empieza la constante en este caso esta vacio
 
 
 const [nombre,setNombre] = useState("");
@@ -22,11 +22,13 @@ const [locacion,setLocacion] = useState('')
 const [info,setInfo] = useState("");
 
 //para leer el valor de cada variable usamos el primer parametro ej. nombre y para modificatrlo podemos usar el setNombre agregandole 
-//la modificacion del valor  <button onClick={() => setCount(count + 1)}>
+//la modificacion del valor " <button onClick={() => setNombre(nombre = "Leonardo")}>""
+
 
 const handleSubmit =(e) =>{
   e.preventDefault()
 
+  //set info esta modificando el valor de info y lo esta cambiando por la informacion otorgada dentro de su modificador
 setInfo(nombre+fecha+locacion)
 
 }
