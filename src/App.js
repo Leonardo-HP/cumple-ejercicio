@@ -5,28 +5,6 @@ import { useState } from 'react';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //documentacion en hooks https://reactjs.org/docs/hooks-state.html
 
 function App() {
@@ -117,13 +95,6 @@ function App() {
 
 
  
- const ImagenZodiaco = () =>{
-  return <img alt='imagen zodiaco'  src="https://i.postimg.cc/XXw6NwHs/zodiac.png"></img>
- }
-
-
-
-console.log(ImagenZodiaco)
 
 
 //declaramos las variables y su manejador de estado con un hook
@@ -142,6 +113,39 @@ const [info,setInfo] = useState("");
 const [yearZodiaco,setYearZodiaco] = useState("");
 const [edad,setEdad] = useState("");
 const [saludo,setSaludo] = useState("");
+const [signo,setSigno] = useState("");
+const [imagen,setImagen] = useState("");
+const [descripcionZodiaco,setDescripcionZodiaco ] = useState("");
+const [zodiaco,setZodiaco] = useState("");
+
+const [imagenZodiaco,setImagenZodiaco] = useState(<img alt='imagen zodiaco'  src="https://i.postimg.cc/XXw6NwHs/zodiac.png"></img>);
+
+
+
+
+
+//esta es la cracion del componente imagen zodiazco pero depende del valor que se le va a otorgar dependiendo del loop que nos da el src de
+const ImagenZodiacoComponente = () =>{
+  return imagenZodiaco
+ }
+
+
+const Zodiaco =() =>{
+  return zodiaco
+}
+const DescripcionZodiaco =() =>{
+  return descripcionZodiaco
+}
+
+
+
+
+
+
+
+
+
+
 
 //para leer el valor de cada variable usamos el primer parametro ej. nombre y para modificatrlo podemos usar el setNombre agregandole 
 //la modificacion del valor " <button onClick={() => setNombre(nombre = "Leonardo")}>""
@@ -193,7 +197,62 @@ const handleSubmit =(e) =>{
        setSaludo(`Hola, tienes ${edad} años. ¿cómo estás? `)
         }
 
-      }}
+// ciclo for para iterar dentro del objeto de objetos
+for (let item of signos) {
+
+  if (item.years.includes(yearZodiaco)) {
+    // asignacion de valorres
+    setSigno(item.key);
+    console.log(signo);
+
+    setImagen(item.imagen);
+    console.log(imagen);
+                                                                                     
+    setDescripcionZodiaco(item.description);
+    console.log(descripcionZodiaco);
+
+
+   
+    // aqui termina de iterar
+    break
+
+   
+  }}
+
+  if (yearZodiaco) {
+    setZodiaco(`Tu signo zodiacal es ${signo}`)
+    setImagenZodiaco(<img alt= {signo}  src={imagen}></img>)
+ }
+
+ else {
+  setZodiaco ("")
+}
+} else{
+
+  setSaludo ("Tus mentiras hacen llorar al niño Dios");
+      setDescripcionZodiaco ("")
+      setImagenZodiaco("https://i.postimg.cc/XXw6NwHs/zodiac.png")
+      setZodiaco("")
+}
+    }else{
+
+
+      if (nombre) {
+        setSaludo (`Hola ${nombre}, por favor ingresa tu edad`)
+      } else {
+        setSaludo  ("Por favor ingresa tu edad")
+        setDescripcionZodiaco ("");
+        imagenZodiaco ("https://i.postimg.cc/XXw6NwHs/zodiac.png")
+        setZodiaco ("")
+
+
+      }
+
+
+
+}
+
+      
 
 
 console.log(yearZodiaco)
@@ -202,6 +261,10 @@ console.log(edad)
 
 
 }
+
+
+
+
 
 
 
@@ -250,12 +313,13 @@ console.log(edad)
 </form>
 
 <p>{info}</p>
-<p>{yearZodiaco}</p>
-<p>{edad}</p>
 
 <p>{saludo}</p>
-<ImagenZodiaco></ImagenZodiaco>
 
+<Zodiaco></Zodiaco>
+<ImagenZodiacoComponente ></ImagenZodiacoComponente >
+<br/>
+<DescripcionZodiaco></DescripcionZodiaco>
 
 
 
