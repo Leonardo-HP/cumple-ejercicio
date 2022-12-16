@@ -177,9 +177,7 @@ const handleSubmit =(e) =>{
     let yearZodiaco = new Date().getFullYear() - edad;
   
 
-    // definimos year zodiaco con la misma definicion
-
-
+    // definimos year zodiaco con la misma definicion que se resuelve despues 
     setEdad(edad)
     setYearZodiaco(yearZodiaco)
 
@@ -188,7 +186,7 @@ const handleSubmit =(e) =>{
     if (edad) {
       if (edad >= 5 && edad <= 90) {
         if (nombre) {
-         setSaludo(`Hola ${nombre}, tienes ${edad} años. <br/>  ¿cómo estás? `)
+         setSaludo(`Hola ${nombre}, tienes ${edad} años. ¿cómo estás? `)
   
         } else {
 
