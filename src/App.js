@@ -1,8 +1,6 @@
-import logo from "./logo.svg";
-import "./App.css";
-import { useState } from "react";
 
-//documentacion en hooks https://reactjs.org/docs/hooks-state.html
+import "./styles.css";
+import { useState } from "react";
 
 function App() {
   const signos = [
@@ -111,12 +109,15 @@ function App() {
   const [locacion, setLocacion] = useState("");
   const [info, setInfo] = useState("");
   const [yearZodiaco, setYearZodiaco] = useState("");
-  const [edad, setEdad] = useState("");
+  const [edad, setEdad] = useState(null);
   const [saludo, setSaludo] = useState("");
   const [signo, setSigno] = useState("");
   const [imagen, setImagen] = useState("");
   const [descripcionZodiaco, setDescripcionZodiaco] = useState("");
   const [zodiaco, setZodiaco] = useState("");
+  const [nombrePelicula, setNombrePelicula] = useState("");
+
+
 
   const [imagenZodiaco, setImagenZodiaco] = useState(
     <img
@@ -125,8 +126,11 @@ function App() {
     ></img>
   );
 
+
+
   //esta es la cracion del componente imagen zodiazco pero depende del valor que se le va a otorgar dependiendo del loop que nos da el src de
   const ImagenZodiacoComponente = () => {
+   
     return imagenZodiaco;
   };
 
@@ -136,12 +140,16 @@ function App() {
   const DescripcionZodiaco = () => {
     return descripcionZodiaco;
   };
+const NombrePelicula =()=>{
+  return nombrePelicula
+}
+
 
   //para leer el valor de cada variable usamos el primer parametro ej. nombre y para modificatrlo podemos usar el setNombre agregandole
   //la modificacion del valor " <button onClick={() => setNombre(nombre = "Leonardo")}>""
 
   //esta funcion componente que nuestro boton submit va a realizar cuando hagamos click en submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
     //desde aqui podemos modificar el comportamiento de nuestros modificadores de estado en este caso actualizamos el set info
@@ -201,6 +209,15 @@ function App() {
         if (yearZodiaco) {
           setZodiaco(`Tu signo zodiacal es ${signo}`);
           setImagenZodiaco(<img alt={signo} src={imagen}></img>);
+
+
+          const respuesta = await (await fetch("https://api.themoviedb.org/3/discover/movie?api_key=70b958dc189d24fadf58a95a841be354&language=es-mx&sort_by=popularity.desc&include_adult=false&include_video=false&primary_release_year=" + yearZodiaco + "&vote_count.gte=700&vote_average.gte=6")).json();
+ let nombrePeliculaAPI = respuesta.results[0].title;
+
+setNombrePelicula (`¿Sabías que la película más popular en tu año de nacimiento fue ${nombrePeliculaAPI}?`
+
+)
+
         } else {
           setZodiaco("");
         }
@@ -223,12 +240,43 @@ function App() {
 
     console.log(yearZodiaco);
     console.log(edad);
+    console.log(signo)
   };
+  
 
+
+// imagen ZodiacoProps esta trabajando en paralelo a imagen Zosfiaco
+/*const ImagenZodiacoProps = (props) => {
+
+
+  const signo = props.signo;
+  const signosY = signos.map(({ key, imagen }) => ({ [key]: imagen }));
+
+
+  const defaultImg = "https://i.postimg.cc/XXw6NwHs/zodiac.png"
+
+  return <img src={signosY[signo] || defaultImg} alt= "imagen"></img>
+  }
+*/
+
+const ImagenZodiacoProps = (props) => {
+
+  const signosLista = signos.map(({ key, imagen }) => ({ [key]: imagen }));
+  console.log(signosLista)
+
+  const signoZ = signosLista[props.signo]  
+
+  const imagenSignoZ = signoZ ||  signosLista[12].Mentiroso
+
+  return <img src={imagenSignoZ}  alt= "imagen"></img>
+  }
+
+
+    
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+   
         <p>Unicamente imprimimos la informacion</p>
 
         <form onSubmit={handleSubmit}>
@@ -249,7 +297,7 @@ function App() {
           <br></br>
           <label>
             {" "}
-            ¿Cuando naciste?
+            ¿Cuando naciste loco?
             <input
               type="date"
               value={fecha}
@@ -279,10 +327,17 @@ function App() {
 
         <p>{saludo}</p>
 
-        <Zodiaco></Zodiaco>
+        <Zodiaco></Zodiaco>a
         <ImagenZodiacoComponente></ImagenZodiacoComponente>
+        <br></br>
+        <br></br>
+        <ImagenZodiacoProps></ImagenZodiacoProps>
+        <br></br>
         <br />
         <DescripcionZodiaco></DescripcionZodiaco>
+        <NombrePelicula></NombrePelicula>
+
+
       </header>
     </div>
   );
