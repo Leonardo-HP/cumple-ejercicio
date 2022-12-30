@@ -248,29 +248,20 @@ setNombrePelicula (`¿Sabías que la película más popular en tu año de nacimi
 // imagen ZodiacoProps esta trabajando en paralelo a imagen Zosfiaco
 /*const ImagenZodiacoProps = (props) => {
 
-
-  const signo = props.signo;
-  const signosY = signos.map(({ key, imagen }) => ({ [key]: imagen }));
-
-
-  const defaultImg = "https://i.postimg.cc/XXw6NwHs/zodiac.png"
-
-  return <img src={signosY[signo] || defaultImg} alt= "imagen"></img>
-  }
 */
 
-const ImagenZodiacoProps = (props) => {
+console.log(signo)
 
-  const signosLista = signos.map(({ key, imagen }) => ({ [key]: imagen }));
-  console.log(signosLista)
+  const ImagenZodiacoProps = (props) => {
 
-  const signoZ = signosLista[props.signo]  
+    const  defaultIMG = signos.find(a=> (a.key.includes("mentiroso")))
 
-  const imagenSignoZ = signoZ ||  signosLista[12].Mentiroso
+    console.log(defaultIMG.imagen)
+    const  imagenSignoZ = signos.find(a=> (a.key.includes(props.value))) || defaultIMG
+   
+    return <img src={imagenSignoZ.imagen} alt="imagen"></img>;
 
-  return <img src={imagenSignoZ}  alt= "imagen"></img>
-  }
-
+  };
 
     
   return (
