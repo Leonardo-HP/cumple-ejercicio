@@ -1,8 +1,9 @@
 .App {
+  font-family: sans-serif;
   text-align: center;
 }
 
-.App-logo {
+/*.App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -117,4 +118,4 @@ select{
   text-align: center;
   border-bottom: 1px solid;
 	 outline: none;
-}
+}*/

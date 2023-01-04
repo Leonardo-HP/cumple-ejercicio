@@ -13,6 +13,7 @@ const fechas = [
   { key: "cabra", years: [1943, 1955, 1967, 1979, 1991, 2003, 2015] },
   { key: "mono", years: [1944, 1956, 1968, 1980, 1992, 2004, 2016] },
   { key: "gallo", years: [1945, 1957, 1969, 1981, 1993, 2005, 2017] },
+  { key: "perro", years: [1946, 1958, 1970, 1982, 1994, 2006, 2018] },
   { key: "cerdo", years: [1947, 1959, 1971, 1983, 1995, 2007, 2019] }
 ];
 
@@ -85,11 +86,17 @@ const signos = {
 };
 
 const LogoZodiaco = (props) => {
-  const imagenURL = signos[props.value].imagen;
+  const infoZodiaco = signos[props.value];
 
-  console.log(imagenURL);
+  console.log(infoZodiaco.imagen);
+  console.log(infoZodiaco.description);
 
-  return <img src={imagenURL} alt="imagen"></img>;
+  return (
+    <div>
+      <img src={infoZodiaco.imagen} alt="imagen"></img>
+      <p> {infoZodiaco.description} </p>
+    </div>
+  );
 };
 
 export default function App() {
@@ -105,74 +112,98 @@ export default function App() {
 
   const [edad, setEdad] = useState("");
 
-  const handleSubmit = (e) => {
+  const [nombrePeli, setNombrePeli] = useState("");
+
+  const [poster, setPoster] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setFecha(
       new Date().getFullYear() -
         (new Date(Date.now() - new Date(fecha).getTime()).getUTCFullYear() -
-          1970)
+          1969)
     );
     console.log(fecha);
     setEdad(
       new Date(Date.now() - new Date(fecha).getTime()).getUTCFullYear() - 1970
     );
-    console.log(edad);
-    /*edad <= 5 || edad >= 90 ?*/
-
-    setSaludo(
-      nombre.length > 0
-        ? `Hola ${nombre}, tienes ${edad} años. ¿cómo estás? `
-        : `Hola, tienes ${edad} años. ¿cómo estás? `
-    );
-
-    /*  let busqueda = fechas.find((a) => a.years.includes(fecha));
-
-    console.log(busqueda.key);
-*/
   };
-  console.log(saludo);
 
   useEffect(() => {
-
+    if (fecha && edad && saludo) console.log({ fecha, edad, saludo });
     const x = fechas.find((a) => a.years.includes(fecha));
-
     if (x) setZodiaco(x.key);
+
+    if (edad)
+      setSaludo(
+        edad <= 5 || edad >= 90
+          ? "Tus mentiras hacen llorar al niño Dios"
+          : nombre.length > 0
+          ? `Hola ${nombre}, tienes ${edad} años. ¿cómo estás? `
+          : `Hola, tienes ${edad} años. ¿cómo estás? `
+      );
+
+    console.log({ ciudad });
 
     console.log({ x, fecha });
 
-    if (fecha && edad && saludo) console.log({ fecha, edad, saludo });
+    async function fetchData() {
+      const respuestaPeli = await (
+        await fetch(
+          "https://api.themoviedb.org/3/discover/movie?api_key=70b958dc189d24fadf58a95a841be354&language=es-mx&sort_by=popularity.desc&include_adult=false&include_video=false&primary_release_year=" +
+            fecha +
+            "&vote_count.gte=700&vote_average.gte=6"
+        )
+      ).json();
 
-    
+      if (fecha) setNombrePeli(respuestaPeli.results[0].title);
+      if (fecha)
+        setPoster(
+          `https://image.tmdb.org/t/p/w300${respuestaPeli.results[0].poster_path}`
+        );
+      console.log({ poster });
+      console.log({ nombrePeli });
+    }
 
-  },[fecha,edad,saludo]);
-
-
+    fetchData();
+  }, [
+    fecha,
+    edad,
+    saludo,
+    nombre,
+    ciudad,
+    nombrePeli.poster_path,
+    nombrePeli.title,
+    poster,
+    nombrePeli
+  ]);
 
   return (
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
+      <h1>Bienvenido</h1>
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={nombre}
-          placeholder="aqui va tu nombre"
-          onChange={(e) => setNombre(e.target.value)}
-        />
-
+        <label>
+          Cual es tu nombre?
+          <input
+            type="text"
+            value={nombre}
+            placeholder="aqui va tu nombre"
+            onChange={(e) => setNombre(e.target.value)}
+          />
+          <br></br>
+        </label>{" "}
+        Por favor introduce tu fecha de naciento
+        <label>
+          <input
+            type="date"
+            value={fecha}
+            placeholder="aqui va tu fecha"
+            onChange={(e) => setFecha(e.target.value)}
+          />
+        </label>
         <br></br>
-
-        <input
-          type="date"
-          value={fecha}
-          placeholder="aqui va tu fecha"
-          onChange={(e) => setFecha(e.target.value)}
-        />
-
-        <br></br>
-
         <label>
           ¿Dónde naciste?
           <select value={ciudad} onChange={(e) => setCiudad(e.target.value)}>
@@ -183,13 +214,18 @@ export default function App() {
             <option value="London,UK">Londres UK</option>
           </select>
         </label>
-
         <input id="boton" type="submit" value="Submit" />
-
+        {Boolean(saludo.length) ? <p> {saludo} </p> : null}
         <LogoZodiaco value={zodiaco}></LogoZodiaco>
+        {Boolean(nombrePeli.length) ? (
+          <p>
+            {" "}
+            Sabias que la pelicula mas famosa en el ano en que naciste fue{" "}
+            {nombrePeli} ?{" "}
+          </p>
+        ) : null}
+        {Boolean(poster.length) ? <img src={poster} alt="imagen"></img> : null}
       </form>
-
-      {Boolean(saludo.length) ? <p> {saludo} </p> : null}
     </div>
   );
 }
