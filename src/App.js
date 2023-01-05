@@ -85,6 +85,51 @@ const signos = {
   }
 };
 
+const weatherData = {
+  "clear-day": {
+    imagen: "https://i.postimg.cc/wTXxVTjz/clear-day.png",
+    spanish: "despejado"
+  },
+
+  "clear-night": {
+    imagen: "https://i.postimg.cc/Dw7vYkSX/clear-night.png",
+    spanish: "despejado"
+  },
+
+  cloudy: {
+    imagen: "https://i.postimg.cc/L8vHcCP0/cloudy.png",
+    spanish: "nublado"
+  },
+
+  fog: {
+    imagen: "https://i.postimg.cc/R0FM47QC/fog.png",
+    spanish: "niebla"
+  },
+
+  "partly-cloudy-day": {
+    imagen: "https://i.postimg.cc/wBG9v10X/partly-cloudy-day.png",
+    spanish: "parcialmente nublado"
+  },
+
+  "partly-cloudy-night": {
+    imagen: "https://i.postimg.cc/vTRMrpRD/partly-cloudy-night.png",
+    spanish: "parcialmente nublado"
+  },
+
+  rain: {
+    imagen: "https://i.postimg.cc/DZ4nb7Mt/rain.png",
+    spanish: "lluvioso"
+  },
+  snow: {
+    imagen: "https://i.postimg.cc/x8KQttY5/snow.png",
+    spanish: "nevando"
+  },
+  wind: {
+    imagen: "https://i.postimg.cc/KcLmGvLT/wind.png",
+    spanish: "con viento"
+  }
+};
+
 const LogoZodiaco = (props) => {
   const infoZodiaco = signos[props.value];
 
@@ -95,6 +140,16 @@ const LogoZodiaco = (props) => {
     <div>
       <img src={infoZodiaco.imagen} alt="imagen"></img>
       <p> {infoZodiaco.description} </p>
+    </div>
+  );
+};
+
+const Clima = (props) => {
+  const imagenClima = props.value;
+
+  return (
+    <div>
+      <img src={imagenClima.imagen} alt="imagen"></img>
     </div>
   );
 };
@@ -116,7 +171,21 @@ export default function App() {
 
   const [poster, setPoster] = useState("");
 
-  const handleSubmit = async (e) => {
+  const [morning, setMorning] = useState("");
+
+  const [noon, setNoon] = useState("");
+
+  const [afternoon, setAfternoon] = useState("");
+
+  const [infoClima, setInfoClima] = useState("");
+
+  const [imagenClima, setImagenClima] = useState("");
+
+  let morningHour = "09:00:00";
+  let noonHour = "12:00:00";
+  let afternoonHour = "21:00:00";
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     setFecha(
@@ -125,6 +194,7 @@ export default function App() {
           1969)
     );
     console.log(fecha);
+
     setEdad(
       new Date(Date.now() - new Date(fecha).getTime()).getUTCFullYear() - 1970
     );
@@ -144,28 +214,69 @@ export default function App() {
           : `Hola, tienes ${edad} años. ¿cómo estás? `
       );
 
-    console.log({ ciudad });
-
     console.log({ x, fecha });
 
     async function fetchData() {
-      const respuestaPeli = await (
-        await fetch(
-          "https://api.themoviedb.org/3/discover/movie?api_key=70b958dc189d24fadf58a95a841be354&language=es-mx&sort_by=popularity.desc&include_adult=false&include_video=false&primary_release_year=" +
-            fecha +
-            "&vote_count.gte=700&vote_average.gte=6"
-        )
-      ).json();
+      if (edad >= 5 && edad <= 90) {
+        const respuestaPeli = await (
+          await fetch(
+            "https://api.themoviedb.org/3/discover/movie?api_key=70b958dc189d24fadf58a95a841be354&language=es-mx&sort_by=popularity.desc&include_adult=false&include_video=false&primary_release_year=" +
+              fecha +
+              "&vote_count.gte=700&vote_average.gte=6"
+          )
+        ).json();
 
-      if (fecha) setNombrePeli(respuestaPeli.results[0].title);
-      if (fecha)
-        setPoster(
-          `https://image.tmdb.org/t/p/w300${respuestaPeli.results[0].poster_path}`
+        if (fecha) setNombrePeli(respuestaPeli.results[0].title);
+        if (fecha)
+          setPoster(
+            `https://image.tmdb.org/t/p/w300${respuestaPeli.results[0].poster_path}`
+          );
+      }
+      if (ciudad) {
+        const respuestaWeather = await (
+          await fetch(
+            "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
+              ciudad +
+              "/" +
+              fecha +
+              "T13:00:00?key=G2NW6FCPG3ZX5W86P2QRA7SLB"
+          )
+        ).json();
+
+        let dias = respuestaWeather.days[0].hours;
+
+        const morningResult = dias.find((a) =>
+          a.datetime.includes(morningHour)
         );
-      console.log({ poster });
-      console.log({ nombrePeli });
-    }
+        const noonResult = dias.find((a) => a.datetime.includes(noonHour));
 
+        const afternoonResult = dias.find((a) =>
+          a.datetime.includes(afternoonHour)
+        );
+
+        setMorning(weatherData[morningResult.icon]);
+        setNoon(weatherData[noonResult.icon]);
+        setAfternoon(weatherData[afternoonResult.icon]);
+
+        setInfoClima(
+          { morning } === { noon } && { noon } === { afternoon }
+            ? ` todo el día fue  ${morning.spanish}`
+            : { morning } === { noon } && { noon } !== { afternoon }
+            ? ` de la mañana a la tarde el día fue  ${morning.spanish}  pero la noche fue  ${afternoon.spanish}`
+            : { morning } !== { noon } && { noon } === { afternoon }
+            ? ` el día empezó ${morning.spanish} , pero de la tarde a la noche el día fue ${afternoon.spanish}`
+            : { morning } !== { noon } && { noon } !== { afternoon }
+            ? ` el día empezó ${morning.spanish} luego se puso  ${noon.spanish}  y termino  ${afternoon.spanish}`
+            : null
+        );
+
+        setImagenClima(noon);
+
+        console.log(`declarado ${infoClima}`);
+
+        console.log({ imagenClima });
+      }
+    }
     fetchData();
   }, [
     fecha,
@@ -176,16 +287,23 @@ export default function App() {
     nombrePeli.poster_path,
     nombrePeli.title,
     poster,
-    nombrePeli
+    nombrePeli,
+    afternoonHour,
+    noonHour,
+    morningHour,
+    morning,
+    afternoon,
+    noon,
+    infoClima,
+    imagenClima
   ]);
 
   return (
     <div className="App">
-      <h1>Bienvenido</h1>
-
       <form onSubmit={handleSubmit}>
+        <h1>Bienvenido</h1>
         <label>
-          Cual es tu nombre?
+          ¿Cuál es tu nombre?
           <input
             type="text"
             value={nombre}
@@ -194,7 +312,7 @@ export default function App() {
           />
           <br></br>
         </label>{" "}
-        Por favor introduce tu fecha de naciento
+        Por favor introduce tu fecha de nacimiento
         <label>
           <input
             type="date"
@@ -217,14 +335,20 @@ export default function App() {
         <input id="boton" type="submit" value="Submit" />
         {Boolean(saludo.length) ? <p> {saludo} </p> : null}
         <LogoZodiaco value={zodiaco}></LogoZodiaco>
-        {Boolean(nombrePeli.length) ? (
+        {Boolean(saludo.length) ? <img src={poster} alt="imagen"></img> : null}
+        {Boolean(saludo.length) ? (
           <p>
             {" "}
-            Sabias que la pelicula mas famosa en el ano en que naciste fue{" "}
+            Sabías que la película más famosa en el año en que naciste fue{" "}
             {nombrePeli} ?{" "}
           </p>
         ) : null}
-        {Boolean(poster.length) ? <img src={poster} alt="imagen"></img> : null}
+        {Boolean(saludo.length) ? (
+          <>
+            <Clima value={noon}></Clima>
+            <p>{infoClima}</p>
+          </>
+        ) : null}
       </form>
     </div>
   );
